@@ -1,0 +1,23 @@
+<!-- The core Firebase JS SDK is always required and must be listed first -->
+<script src="https://www.gstatic.com/firebasejs/7.15.1/firebase-app.js"></script>
+
+<!-- TODO: Add SDKs for Firebase products that you want to use
+     https://firebase.google.com/docs/web/setup#available-libraries -->
+<script src="https://www.gstatic.com/firebasejs/7.15.1/firebase-analytics.js"></script>
+
+<script>
+  // Your web app's Firebase configuration
+  var firebaseConfig = {
+    apiKey: "AIzaSyBmzbs6yQt2Gszpd2il9SHA6BUHsBlfuJ8",
+    authDomain: "vue03timetable.firebaseapp.com",
+    databaseURL: "https://vue03timetable.firebaseio.com",
+    projectId: "vue03timetable",
+    storageBucket: "vue03timetable.appspot.com",
+    messagingSenderId: "851509991333",
+    appId: "1:851509991333:web:23685ea1c06b1453463a4c",
+    measurementId: "G-RSJ4VSWQXE"
+  };
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+  firebase.analytics();
+</script>

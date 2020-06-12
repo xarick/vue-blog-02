@@ -1,0 +1,23 @@
+<!-- The core Firebase JS SDK is always required and must be listed first -->
+<script src="https://www.gstatic.com/firebasejs/7.14.4/firebase-app.js"></script>
+
+<!-- TODO: Add SDKs for Firebase products that you want to use
+     https://firebase.google.com/docs/web/setup#available-libraries -->
+<script src="https://www.gstatic.com/firebasejs/7.14.4/firebase-analytics.js"></script>
+
+<script>
+  // Your web app's Firebase configuration
+  var firebaseConfig = {
+    apiKey: "AIzaSyDYrxwVxX-UYzXosxtHDtQ0ZE1AMeEX4rc",
+    authDomain: "vue02myproject.firebaseapp.com",
+    databaseURL: "https://vue02myproject.firebaseio.com",
+    projectId: "vue02myproject",
+    storageBucket: "vue02myproject.appspot.com",
+    messagingSenderId: "159921238046",
+    appId: "1:159921238046:web:5a163609b52df28adebe0f",
+    measurementId: "G-DQDW7MF34H"
+  };
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+  firebase.analytics();
+</script>

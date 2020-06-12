@@ -1,0 +1,317 @@
+<template lang="pug">
+  .content-wrapper
+    section
+      .container
+        h1.ui-title-1 Home
+        input(
+          type="text"
+          placeholder="What we will watch?"
+          v-model="taskTitle"
+        )
+        textarea(
+          type="text"
+          v-model="taskDescription"
+          @keyup.enter="newTask"
+        )
+        .option-list
+          input.what-watch--radio(
+            type="radio"
+            id="radioFilm"
+            value="Film"
+            v-model="whatWatch"
+          )
+          label(
+            for="radioFilm"
+          ) Film
+          input.what-watch--radio(
+            type="radio"
+            id="radioSerial"
+            value="Serial"
+            v-model="whatWatch"
+          )
+          label(
+            for="radioSerial"
+          ) Serial
+        // total time
+        .total-time
+          // Film Time
+          .total-time__film(
+            v-if="whatWatch === 'Film'"
+          )
+            span.time-title Hours
+            input.time-input(
+              type="number"
+              v-model="filmHours"
+            )
+            span.time-title Minutes
+            input.time-input(
+              type="number"
+              v-model="filmMinutes"
+            )
+            p {{ filmTime }}
+          // Serial Time
+          .total-time__serial(
+            v-if="whatWatch === 'Serial'"
+          )
+
+            span.time-title How Many season?
+            input.time-input(
+              type="number"
+              v-model="serialSeason"
+            )
+            span.time-title How Many Serials?
+            input.time-input(
+              type="number"
+              v-model="serialSeries"
+            )
+            span.time-title How Long is one Series? (minut)
+            input.time-input(
+              type="number"
+              v-model="serialSeriesMinutes"
+            )
+            p {{ serialTime }}
+        // Tag List
+        // Add new Tag
+        .tag-list.tag-list--add
+          .ui-tag__wrapper(
+            @click="tagMenuShow = !tagMenuShow"
+          )
+            .ui-tag
+              span.tag-title Add New
+              span.button-close(
+                :class="{active: !tagMenuShow}"
+              )
+        // Show input
+        transition(name="fade")
+          .tag-list.tag-list--menu(
+            v-if="tagMenuShow"
+          )
+            input.tag-add--input(
+              type="text"
+              placeholder="New tag"
+              v-model="tagTitle"
+              @keyup.enter="newTag"
+            )
+            .button.button-default(
+              @click="newTag"
+            ) Send
+        // All tags
+        .tag-list
+          transition-group(
+            enter-active-class="animated fadeInRight"
+            leave-active-class="animated fadeOutDown"
+          )
+            .ui-tag__wrapper(
+              v-for="tag in tags"
+                :key="tag.title"
+            )
+              .ui-tag(
+                @click="addTagUsed(tag)"
+                :class="{used: tag.use}"
+              )
+                span.tag-title {{ tag.title }}
+                span.button-close
+        // SUBMIT
+        p {{ tagUsed }}
+        .button-list
+          .button.button--round.button-primary(
+            @click="newTask"
+          ) Send
+</template>
+
+<script>
+export default {
+  data () {
+    return {
+      // Film
+      submitStatus: null,
+      filmHours: 1,
+      filmMinutes: 30,
+      // Serial
+      serialSeason: 1,
+      serialSeries: 11,
+      serialSeriesMinutes: 40,
+      // Tags
+      tagUsed: [],
+      tagTitle: '',
+      tagMenuShow: false,
+      // taskId: 3,
+      taskTitle: '',
+      taskDescription: '',
+      whatWatch: 'Film'
+    }
+  },
+  methods: {
+    newTag () {
+      if (this.taskTitle === '') {
+        return
+      }
+      // this.tags.push({
+      //   title: this.tagTitle,
+      //   used: false
+      // })
+      // console.log(this.tagTitle)
+      const tag = {
+        title: this.tagTitle,
+        use: false
+      }
+      this.$store.dispatch('newTag', tag)
+    },
+    newTask () {
+      if (this.taskTitle === '') {
+        return
+      }
+      let time
+      if (this.whatWatch === 'Film') {
+        time = this.filmTime
+      } else {
+        time = this.serialTime
+      }
+      // this.tasks.push({...})
+      const task = {
+        // id: this.taskId,
+        title: this.taskTitle,
+        description: this.taskDescription,
+        whatWatch: this.whatWatch,
+        time,
+        tags: this.tagUsed,
+        completed: false,
+        editing: false
+      }
+      this.$store.dispatch('newTask', task)
+      // console.log(task)
+
+      // reset
+      // this.taskId += 1
+      this.taskTitle = ''
+      this.taskDescription = ''
+      this.tagUsed = []
+      this.tagTitle = ''
+      // this.$v.reset()
+
+      for (let i = 0; i < this.tags.length; i++) {
+        this.tags[i].use = false
+      }
+    },
+    addTagUsed (tag) {
+      tag.use = !tag.use
+      if (tag.use) {
+        this.tagUsed.push({
+          title: tag.title
+        })
+        // tag.title
+      } else {
+        this.tagUsed.splice(tag.title, 1)
+      }
+    },
+    getHoursAndMinutes (minutes) {
+      let hours = Math.trunc(minutes / 60)
+      let min = minutes % 60
+      return hours + ' Hours ' + min + ' Minutes.'
+    }
+  },
+  computed: {
+    tags () {
+      return this.$store.getters.tags
+    },
+    filmTime () {
+      let min = (this.filmHours * 60) + (this.filmMinutes * 1)
+      return this.getHoursAndMinutes(min)
+    },
+    serialTime () {
+      let min = this.serialSeason * this.serialSeries * this.serialSeriesMinutes
+      return this.getHoursAndMinutes(min)
+    }
+  }
+}
+</script>
+
+<style lang="stylus" scoped>
+.option-list
+  display flex
+  .what-watch--radio
+    margin-right 12px
+  label
+    margin-right 20px
+    &:last-child
+      margin-bottom 0
+
+// Total time
+.total-time
+  margin-bottom 20px
+
+.time-title
+  display block
+  margin-bottom 6px
+
+.time-input
+  max-width 80px
+  margin-right 10px
+// Tag
+.tag-list
+  margin-bottom 20px
+.ui-tag__wrapper
+  margin-right 18px
+  margin-bottom 10px
+  &:last-child
+    margin-right 0
+.ui-tag
+  .button-close
+    &.active
+      transform: rotate(45deg)
+  &.used
+    background-color: #444ce0
+    color #fff
+    .button-close
+      &:before,
+      &:after
+        background-color: #fff
+// Tag Menu Show
+.tag-list--menu
+  display flex
+  justify-content space-between
+  align-items center
+// New Tag Input
+.tag-add--input
+  margin-bottom 0
+  margin-right 10px
+  height 42px
+// Button
+.button-list
+  float right
+/* https://daneden.github.io/animate.css/ */
+.animated {
+  animation-duration: 0.5s;
+  animation-fill-mode: both;
+}
+// fadeInRight
+.fadeInRight {
+  animation-name: fadeInRight;
+}
+
+@keyframes fadeInRight {
+  from {
+    opacity: 0;
+    transform: translate3d(100%, 0, 0);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+// fadeOutDown
+.fadeOutDown {
+  animation-name: fadeOutDown;
+}
+@keyframes fadeOutDown {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+    transform: translate3d(0, 100%, 0);
+  }
+}
+</style>
